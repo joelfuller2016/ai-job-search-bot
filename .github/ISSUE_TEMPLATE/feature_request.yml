@@ -1,0 +1,154 @@
+name: ✨ Feature Request
+description: Suggest a new feature or enhancement
+title: "[FEATURE] "
+labels: ["enhancement", "needs-triage"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for suggesting a new feature! Please provide as much detail as possible.
+
+  - type: checkboxes
+    id: prerequisites
+    attributes:
+      label: Prerequisites
+      options:
+        - label: I have searched existing issues and this feature hasn't been requested
+          required: true
+        - label: I have read the project roadmap
+          required: true
+
+  - type: dropdown
+    id: component
+    attributes:
+      label: Component
+      description: Which component would this feature affect?
+      options:
+        - API Gateway
+        - Job Discovery Service
+        - AI Analysis Service
+        - Application Engine
+        - Email Manager
+        - Dashboard (Frontend)
+        - Database
+        - Infrastructure
+        - Documentation
+        - New Component
+    validations:
+      required: true
+
+  - type: dropdown
+    id: feature_type
+    attributes:
+      label: Feature Type
+      description: What type of feature is this?
+      options:
+        - New functionality
+        - Performance improvement
+        - User experience enhancement
+        - Integration with external service
+        - Developer experience improvement
+        - Security enhancement
+        - Monitoring/Observability
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem Statement
+      description: What problem does this feature solve?
+      placeholder: |
+        Describe the problem you're trying to solve:
+        - What is the current limitation?
+        - Who is affected by this problem?
+        - How often does this problem occur?
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: Proposed Solution
+      description: Describe your proposed solution
+      placeholder: |
+        Describe the solution you'd like:
+        - How would this feature work?
+        - What would the user experience be like?
+        - Are there any specific requirements?
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives Considered
+      description: What alternatives have you considered?
+      placeholder: |
+        Describe alternatives you've considered:
+        - Other ways to solve this problem
+        - Existing tools or workarounds
+        - Why those alternatives aren't suitable
+
+  - type: textarea
+    id: use_cases
+    attributes:
+      label: Use Cases
+      description: Provide specific use cases for this feature
+      placeholder: |
+        Describe specific use cases:
+        1. As a [user type], I want to [goal] so that [benefit]
+        2. When [situation], this feature would help by [benefit]
+        3. Example scenario: [detailed example]
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      description: How important is this feature to you?
+      options:
+        - Critical (blocking current work)
+        - High (important for productivity)
+        - Medium (nice to have)
+        - Low (minor improvement)
+    validations:
+      required: true
+
+  - type: dropdown
+    id: complexity
+    attributes:
+      label: Estimated Complexity
+      description: How complex do you think this feature would be to implement?
+      options:
+        - Low (simple addition/change)
+        - Medium (moderate development effort)
+        - High (significant development effort)
+        - Very High (major architectural changes)
+        - Unknown
+
+  - type: textarea
+    id: mockups
+    attributes:
+      label: Mockups/Examples
+      description: Add any mockups, wireframes, or examples
+      placeholder: |
+        If you have any visual examples, mockups, or references:
+        - Drag and drop images
+        - Links to similar features in other tools
+        - ASCII art for CLI features
+        - API endpoint examples
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional Context
+      description: Any additional context or considerations
+      placeholder: |
+        Additional considerations:
+        - Impact on existing features
+        - Performance considerations
+        - Security implications
+        - Compatibility requirements
