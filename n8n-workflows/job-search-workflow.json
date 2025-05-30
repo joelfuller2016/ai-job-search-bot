@@ -1,0 +1,305 @@
+{
+  "name": "Job Search Automation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "hours",
+              "hoursInterval": 6
+            }
+          ]
+        }
+      },
+      "id": "f5d96b3b-6c80-4b1a-9c8a-0b1e9d5c3a2f",
+      "name": "Schedule Job Search",
+      "type": "n8n-nodes-base.cron",
+      "typeVersion": 1,
+      "position": [240, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/api/jobs/search",
+        "requestMethod": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n  \"keywords\": \"{{ $json.searchCriteria.keywords }}\",\n  \"location\": \"{{ $json.searchCriteria.location }}\",\n  \"jobBoards\": [\"indeed\", \"linkedin\", \"glassdoor\"],\n  \"maxResults\": 50\n}"
+      },
+      "id": "a1b2c3d4-e5f6-7890-1234-567890abcdef",
+      "name": "Trigger Job Search",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "url": "=http://localhost:3001/api/jobs?status=discovered&limit=10",
+        "options": {}
+      },
+      "id": "b2c3d4e5-f6a7-8901-2345-6789abcdef01",
+      "name": "Get New Jobs",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "id": "c3d4e5f6-a7b8-9012-3456-789abcdef012",
+      "name": "Process Each Job",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [900, 300]
+    },
+    {
+      "parameters": {
+        "url": "=http://localhost:3001/api/jobs/{{ $json.id }}/analyze",
+        "requestMethod": "POST",
+        "options": {}
+      },
+      "id": "d4e5f6a7-b8c9-0123-4567-89abcdef0123",
+      "name": "Analyze Job with AI",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1120, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "4e7c4a4b-1e8c-4c1a-9b3e-8f5a2d1c9b7e",
+              "leftValue": "={{ $json.analysis.shouldApply }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equal"
+              }
+            },
+            {
+              "id": "5f8d5b5c-2f9d-5d2b-ac4f-9g6b3e2dac8f",
+              "leftValue": "={{ $json.analysis.matchScore }}",
+              "rightValue": 0.7,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "e5f6a7b8-c9d0-1234-5678-9abcdef01234",
+      "name": "Should Apply?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2,
+      "position": [1340, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/api/applications",
+        "requestMethod": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n  \"jobId\": {{ $json.id }},\n  \"coverLetter\": \"{{ $json.analysis.coverLetter }}\",\n  \"applicationMethod\": \"automated\"\n}"
+      },
+      "id": "f6a7b8c9-d0e1-2345-6789-abcdef012345",
+      "name": "Create Application",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Extract job application URL and details\nconst job = items[0].json;\nconst applicationUrl = job.applicationUrl || job.jobUrl;\nconst companyName = job.company;\nconst jobTitle = job.title;\n\nreturn [{\n  json: {\n    ...job,\n    applicationUrl,\n    companyName,\n    jobTitle,\n    timestamp: new Date().toISOString()\n  }\n}];"
+      },
+      "id": "a7b8c9d0-e1f2-3456-789a-bcdef0123456",
+      "name": "Prepare Application Data",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1780, 200]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3001/api/automation/apply",
+        "requestMethod": "POST",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={{ JSON.stringify($json) }}"
+      },
+      "id": "b8c9d0e1-f2a3-4567-89ab-cdef01234567",
+      "name": "Submit Application",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [2000, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Log the application submission\nconst result = items[0].json;\nconsole.log('Application submitted:', {\n  jobId: result.jobId,\n  company: result.company,\n  status: result.status,\n  timestamp: new Date().toISOString()\n});\n\nreturn items;"
+      },
+      "id": "c9d0e1f2-a3b4-5678-9abc-def012345678",
+      "name": "Log Application",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [2220, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Log jobs that don't meet application criteria\nconst job = items[0].json;\nconsole.log('Job skipped:', {\n  jobId: job.id,\n  company: job.company,\n  title: job.title,\n  matchScore: job.analysis?.matchScore || 0,\n  reason: 'Does not meet application criteria',\n  timestamp: new Date().toISOString()\n});\n\nreturn items;"
+      },
+      "id": "d0e1f2a3-b4c5-6789-abcd-ef0123456789",
+      "name": "Log Skipped Job",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [1560, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "// Initialize search criteria\nreturn [{\n  json: {\n    searchCriteria: {\n      keywords: process.env.SEARCH_KEYWORDS || 'software developer javascript node.js',\n      location: process.env.SEARCH_LOCATION || 'Remote',\n      salaryMin: process.env.SALARY_MIN || 80000,\n      experienceLevel: process.env.EXPERIENCE_LEVEL || 'mid'\n    }\n  }\n}];"
+      },
+      "id": "e1f2a3b4-c5d6-789a-bcde-f01234567890",
+      "name": "Initialize Search",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 2,
+      "position": [240, 480]
+    }
+  ],
+  "connections": {
+    "Schedule Job Search": {
+      "main": [
+        [
+          {
+            "node": "Initialize Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Initialize Search": {
+      "main": [
+        [
+          {
+            "node": "Trigger Job Search",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Trigger Job Search": {
+      "main": [
+        [
+          {
+            "node": "Get New Jobs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get New Jobs": {
+      "main": [
+        [
+          {
+            "node": "Process Each Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Process Each Job": {
+      "main": [
+        [
+          {
+            "node": "Analyze Job with AI",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyze Job with AI": {
+      "main": [
+        [
+          {
+            "node": "Should Apply?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Should Apply?": {
+      "main": [
+        [
+          {
+            "node": "Create Application",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Log Skipped Job",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Application": {
+      "main": [
+        [
+          {
+            "node": "Prepare Application Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Application Data": {
+      "main": [
+        [
+          {
+            "node": "Submit Application",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Submit Application": {
+      "main": [
+        [
+          {
+            "node": "Log Application",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "1.0.0",
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "id": "job-search-automation",
+  "tags": ["job-search", "automation", "ai"]
+}
