@@ -1,0 +1,157 @@
+{
+  "keywords": [
+    "software developer",
+    "full stack developer",
+    "javascript developer",
+    "node.js developer",
+    "react developer",
+    "frontend developer",
+    "backend developer",
+    "web developer"
+  ],
+  "locations": [
+    "Remote",
+    "San Francisco, CA",
+    "New York, NY",
+    "Seattle, WA",
+    "Austin, TX",
+    "Denver, CO"
+  ],
+  "jobBoards": [
+    {
+      "name": "indeed",
+      "url": "https://www.indeed.com",
+      "enabled": true,
+      "selectors": {
+        "searchBox": "#text-input-what",
+        "locationBox": "#text-input-where",
+        "searchButton": ".yosegi-InlineWhatWhere-primaryButton",
+        "jobCards": ".slider_container .slider_item",
+        "jobTitle": "[data-jk] h2 a span",
+        "company": ".companyName",
+        "location": ".companyLocation",
+        "salary": ".salary-snippet-container",
+        "description": ".jobsearch-SerpJobCard-snippet"
+      }
+    },
+    {
+      "name": "linkedin",
+      "url": "https://www.linkedin.com/jobs",
+      "enabled": true,
+      "selectors": {
+        "searchBox": ".jobs-search-box__text-input[aria-label*='Search']",
+        "locationBox": ".jobs-search-box__text-input[aria-label*='City']",
+        "searchButton": ".jobs-search-box__submit-button",
+        "jobCards": ".jobs-search__results-list li",
+        "jobTitle": ".base-search-card__title",
+        "company": ".base-search-card__subtitle",
+        "location": ".job-search-card__location",
+        "description": ".base-search-card__metadata"
+      }
+    },
+    {
+      "name": "glassdoor",
+      "url": "https://www.glassdoor.com/Job/jobs.htm",
+      "enabled": true,
+      "selectors": {
+        "searchBox": "#searchBar-jobTitle",
+        "locationBox": "#searchBar-location",
+        "searchButton": "#searchBar-submitButton",
+        "jobCards": ".react-job-listing",
+        "jobTitle": "[data-test='job-title']",
+        "company": "[data-test='employer-name']",
+        "location": "[data-test='job-location']",
+        "salary": "[data-test='detailSalary']"
+      }
+    },
+    {
+      "name": "monster",
+      "url": "https://www.monster.com",
+      "enabled": false,
+      "selectors": {
+        "searchBox": "#q",
+        "locationBox": "#where",
+        "searchButton": "#searchSubmit"
+      }
+    }
+  ],
+  "companyBlacklist": [
+    "MLM Company",
+    "Pyramid Scheme Corp",
+    "Sketchy Startup"
+  ],
+  "companyWhitelist": [
+    "Google",
+    "Microsoft",
+    "Apple",
+    "Amazon",
+    "Meta",
+    "Netflix",
+    "Spotify",
+    "Airbnb",
+    "Uber",
+    "Stripe"
+  ],
+  "requirements": {
+    "minSalary": 80000,
+    "maxSalary": 200000,
+    "experienceLevel": ["entry", "mid", "senior"],
+    "workType": ["remote", "hybrid"],
+    "requiredSkills": [
+      "JavaScript",
+      "Node.js",
+      "React",
+      "Git"
+    ],
+    "preferredSkills": [
+      "TypeScript",
+      "AWS",
+      "Docker",
+      "MongoDB",
+      "PostgreSQL"
+    ],
+    "excludeKeywords": [
+      "unpaid",
+      "internship",
+      "contract only",
+      "commission only",
+      "no experience necessary"
+    ]
+  },
+  "applicationSettings": {
+    "maxApplicationsPerDay": 10,
+    "applicationDelay": {
+      "min": 30,
+      "max": 120
+    },
+    "followUpDelay": {
+      "initial": 7,
+      "subsequent": 14
+    },
+    "autoApply": {
+      "enabled": true,
+      "minMatchScore": 0.7,
+      "requiresManualReview": [
+        "senior",
+        "lead",
+        "principal",
+        "director"
+      ]
+    }
+  },
+  "aiCriteria": {
+    "matchingPrompt": "Analyze this job posting and determine if it matches the candidate's profile. Consider: required skills, experience level, company culture fit, salary range, and growth opportunities. Return a match score between 0-1 and explain the reasoning.",
+    "coverLetterPrompt": "Generate a personalized cover letter for this job application. Use the candidate's resume and the job posting to create a compelling narrative that highlights relevant experience and enthusiasm for the role. Keep it concise and professional.",
+    "analysisPoints": [
+      "skill_match",
+      "experience_level",
+      "company_culture",
+      "growth_potential",
+      "compensation",
+      "work_life_balance",
+      "technology_stack",
+      "team_size",
+      "industry_alignment"
+    ]
+  }
+}
