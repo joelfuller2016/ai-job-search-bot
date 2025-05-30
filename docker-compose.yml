@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  api:
+    build: ./api
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=/app/data/jobs.db
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+    depends_on:
+      - n8n
+    restart: unless-stopped
+
+  dashboard:
+    build: ./dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - REACT_APP_API_URL=http://localhost:3001
+    depends_on:
+      - api
+    restart: unless-stopped
+
+  n8n:
+    image: n8nio/n8n:latest
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=admin123
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678
+    volumes:
+      - ./n8n-data:/home/node/.n8n
+      - ./n8n-workflows:/home/node/.n8n/workflows
+    restart: unless-stopped
+
+  browser:
+    build: ./docker/browser
+    ports:
+      - "9222:9222"
+    environment:
+      - DISPLAY=:99
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    restart: unless-stopped
+
+volumes:
+  n8n-data:
+  job-data:
+  logs:
